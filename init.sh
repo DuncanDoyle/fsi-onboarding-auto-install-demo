@@ -16,6 +16,7 @@ STREAM_DOTNET="https://raw.githubusercontent.com/openshift/openshift-ansible/mas
 TEMPLATE_EAP="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.6/xpaas-templates/eap70-basic-s2i.json"
 TEMPLATE_BRMS_63="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.6/xpaas-templates/decisionserver63-basic-s2i.json"
 TEMPLATE_BRMS_64="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.6/xpaas-templates/decisionserver64-basic-s2i.json"
+TEMPLATE_BPMS_64_POSTGRESQL="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.6/xpaas-templates/processserver64-postgresql-s2i.json"
 
 # uncomment amount memory needed, sets RAM usage limit for OCP, default 6 GB.
 #VM_MEMORY=10240    # 10GB
@@ -53,6 +54,13 @@ echo "##  https://github.com/redhatdemocentral/ocp-install-demo   ##"
 echo "##                                                          ##"   
 echo "##############################################################"
 echo
+
+
+# Remove demo Git repo
+echo "Removing old 'FSI Client Onboarding Demo' Git repository."
+echo
+rm -rf fsi-onboarding-template/
+
 
 # Ensure VirtualBox available.
 #
@@ -354,6 +362,31 @@ if [ $? -ne 0 ]; then
 	fi
 fi
 
+TEMPLATE_BPMS_64_POSTGRESQL
+echo
+echo "Updating Process Server templates..."
+echo
+oc delete -n openshift -f $TEMPLATE_BPMS_64_POSTGRESQL >/dev/null 2>&1
+oc create -n openshift -f $TEMPLATE_BPMS_64_POSTGRESQL
+
+if [ $? -ne 0 ]; then
+        echo
+        echo "Problem with accessing JBoss BPM Suite product streams for OCP..."
+        echo
+  echo "Trying again..."
+        echo
+        sleep 10
+  oc delete -n openshift -f $TEMPLATE_BPMS_64_POSTGRESQL >/dev/null 2>&1
+  oc create -n openshift -f $TEMPLATE_BPMS_64_POSTGRESQL
+
+        if [ $? -ne 0 ]; then
+                echo "Failed again, exiting, check output messages and network connectivity before running install again..."
+                echo
+                docker-machine rm -f openshift
+                exit
+        fi
+fi
+
 echo
 echo "Updating RHEL 7 image streams..."
 echo
@@ -403,10 +436,20 @@ if [ $? -ne 0 ]; then
 fi
 
 echo
+echo "FSI Onboarding Demo Project..."
+echo
+
+oc login -u openshift-dev -p devel
+
+git clone https://github.com/entando/fsi-onboarding-template
+pushd fsi-onboarding-template/openshift
+./provision.sh setup client-onboarding
+popd
+
+echo
 echo "===================================================="
 echo "=                                                  ="
-echo "= Install complete, get ready to rock your Cloud.  ="
-echo "= Look for information at end of OCP install.      ="
+echo "= Install complete, FSI Onboarding Demo deployed.  ="
 echo "=                                                  ="
 echo "=  The server is accessible via web console at:    ="
 echo "=                                                  ="
@@ -417,11 +460,6 @@ echo "=        password: devel                           ="
 echo "=                                                  ="
 echo "=  Admin log in as: admin                          ="
 echo "=         password: admin                          ="
-echo "=                                                  ="
-echo "=  Now get your Red Hat Demo Central example       ="
-echo "=  projects here:                                  ="
-echo "=                                                  ="
-echo "=     https://github.com/redhatdemocentral         ="
 echo "=                                                  ="
 echo "=  To stop and restart your OCP cluster with       ="
 echo "=  installed containers, see Readme.md in the      ="
