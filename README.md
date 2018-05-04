@@ -15,9 +15,12 @@ listed here and the install provides pointers to downloads if missing:
    2. Hyper-V for Windows 10 (Windows Feature Install)
       a. Important - Use Hyper-V Manager to create "ocpNET" Virtual Switch. (name is used in script)
       b. Important - Set "ocpNET" to External Network physical/wireless interface (with DHCP) - Must have Internet.
-   3. Docker engine version 17.06
-   4. OpenShift Client (oc) v3.6.173.0.21
+   3. KVM for Linux
+   4. Docker-machine tooling
+   5. Ansible-playbook tooling
+   5. OpenShift Client (oc) v3.9.14
    ```
+Need more help? Follow a lab workshop on [how to install OpenShift Container Platform step-by-step](https://appdevcloudworkshop.github.io/lab01.html).
 
 
 Install on your machine
@@ -34,7 +37,7 @@ instructions (part of an online workshop)</a> that explain the installation in d
 
 Notes
 -----
-Installation reserves default of 8GB memory on your machine for OCP, see comments at top of init scripts to adjust variable 
+Installation reserves default of 6GB memory on your machine for OCP, see comments at top of init scripts to adjust variable 
 used to limit memory usage based on your needs.
 
 -----
@@ -110,6 +113,16 @@ installations. If you re-run it, it removes old 'openshift' machines and reinsta
 
 Supporting Articles
 -------------------
+- [Free Online Self-Paced Workshop Updated to OpenShift Container Platform 3.7](http://www.schabell.org/2017/12/free-online-self-paced-workshop-updated-openshift-37.html)
+
+- [Cloud Happiness - How to instal new OpenShift Container Platform 3.7 in minutes](http://www.schabell.org/2017/12/cloud-happiness-how-to-install-new-openshift-v37-in-minutes.html) 
+
+- [Windows Hyper-V OpenShift Container Platform Install in Minutes](http://www.schabell.org/2017/11/windows-hyper-v-openshift-container-platform-install-minutes.html)
+
+- [10 Steps to Cloud Happiness: Step 2 - Use a Container Catalog](http://www.schabell.org/2017/10/10-steps-to-cloud-happiness-step-2.html)
+
+- [10 Steps to Cloud Happiness: Step 1 - Get a Cloud](http://www.schabell.org/2017/10/10-steps-to-cloud-happiness-step-1.html)
+
 - [Cloud Happiness - How to install new OpenShift Container Platform 3.6 in just minutes](http://www.schabell.org/2017/08/cloud-happiness-how-to-install-new-openshift-v36-in-minutes.html)
 
 - [Anyone show you how to install OpenShift Container Platform in minutes? (video)](http://www.schabell.org/2017/06/howto-install-openshift-container-platform-in-minutes-video.html)
@@ -134,6 +147,16 @@ Supporting Articles
 Released versions
 -----------------
 See the tagged releases for the following versions of the product:
+
+- v2.5 - OpenShift Container Platform v3.9 based on OpenShift command line tools v3.9.14, updated image streams and templates to v3.10 feeds.
+
+- v2.4 - OpenShift Container Platform v3.9 based on OpenShift command line tools v3.9.14.
+
+- v2.3 - OpenShift Container Platform v3.7 based on OpenShift command line tools v3.7.9 and added process server templates.
+
+- v2.2 - OpenShift Container Platform v3.7 based on OpenShift command line tools v3.7.9 with Docker dependency removed.
+
+- v2.1 - OpenShift Container Platform v3.7 based on OpenShift command line tools v3.7.9.
 
 - v2.0 - OpenShift Container Platform v3.6 based on OpenShift command line tools v3.6.173 with Hyper-V Windows installation.
 

@@ -1,57 +1,66 @@
-#!/bin/sh 
+#!/bin/sh
 
 DOCKER_MAJOR_VER=17
 DOCKER_MINOR_VER=06
 OC_MAJOR_VER="v3"
-OC_MINOR_VER=6
-OC_MINI_VER=173
+OC_MINOR_VER=9
+OC_MINI_VER=14
 OCP_VERSION="$OC_MAJOR_VER.$OC_MINOR_VER"
 ISO_URL="https://github.com/boot2docker/boot2docker/releases/download/v1.13.1/boot2docker.iso"
 ISO_CACHE="file://$HOME/.docker/machine/cache/boot2docker.iso"
 VIRT_DRIVER="virtualbox"
-STREAM_JBOSS="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.6/xpaas-streams/jboss-image-streams.json"
-STREAM_FUSE="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.6/xpaas-streams/fis-image-streams.json"
-STREAM_RHEL="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v1.4/image-streams/image-streams-rhel7.json"
-STREAM_DOTNET="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.6/image-streams/dotnet_imagestreams.json"
-TEMPLATE_EAP="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.6/xpaas-templates/eap70-basic-s2i.json"
-TEMPLATE_BRMS_63="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.6/xpaas-templates/decisionserver63-basic-s2i.json"
-TEMPLATE_BRMS_64="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.6/xpaas-templates/decisionserver64-basic-s2i.json"
-TEMPLATE_BPMS_64_POSTGRESQL="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.6/xpaas-templates/processserver64-postgresql-s2i.json"
+STREAM_BRMS_63="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/xpaas-streams/decisionserver63-image-stream.json"
+STREAM_BRMS_64="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/xpaas-streams/decisionserver64-image-stream.json"
+STREAM_EAP_64="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/xpaas-streams/eap64-image-stream.json"
+STREAM_EAP_70="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/xpaas-streams/eap70-image-stream.json"
+STREAM_EAP_71="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/xpaas-streams/eap71-image-stream.json"
+STREAM_FUSE="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/xpaas-streams/fis-image-streams.json"
+STREAM_OPENJDK18="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/xpaas-streams/openjdk18-image-stream.json"
+STREAM_BPMS_63="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/xpaas-streams/processserver63-image-stream.json"
+STREAM_BPMS_64="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/xpaas-streams/processserver64-image-stream.json"
+STREAM_DOTNET="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/image-streams/dotnet_imagestreams.json"
+STREAM_RHEL="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/image-streams/image-streams-rhel7.json"
+TEMPLATE_EAP70="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/xpaas-templates/eap70-basic-s2i.json"
+TEMPLATE_EAP71="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/xpaas-templates/eap71-basic-s2i.json"
+TEMPLATE_BRMS_64="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/xpaas-templates/decisionserver64-basic-s2i.json"
+TEMPLATE_BPM_64="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/xpaas-templates/processserver64-postgresql-s2i.json"
+TEMPLATE_BPM_DB_64="https://raw.githubusercontent.com/openshift/openshift-ansible/master/roles/openshift_examples/files/examples/v3.10/xpaas-templates/processserver64-postgresql-persistent-s2i.json"
 
 # uncomment amount memory needed, sets RAM usage limit for OCP, default 6 GB.
 #VM_MEMORY=10240    # 10GB
-VM_MEMORY=8192    # 8GB
+#VM_MEMORY=8192    # 8GB
 #VM_MEMORY=6144     # 6GB
+VM_MEMORY=4098     # 4GB
 #VM_MEMORY=3072     # 3GB
 
 # wipe screen.
-clear 
+clear
 
 echo
 echo "##############################################################"
-echo "##                                                          ##"   
+echo "##                                                          ##"
 echo "##  Setting up your very own                                ##"
-echo "##                                                          ##"   
+echo "##                                                          ##"
 echo "##    ###  ####  ##### #   #  #### #   # ##### ##### #####  ##"
 echo "##   #   # #   # #     ##  # #     #   #   #   #       #    ##"
 echo "##   #   # ####  ###   # # #  ###  #####   #   ####    #    ##"
 echo "##   #   # #     #     #  ##     # #   #   #   #       #    ##"
 echo "##    ###  #     ##### #   # ####  #   # ##### #       #    ##"
-echo "##                                                          ##"   
+echo "##                                                          ##"
 echo "##    ####  ###  #   # #####  ###  ##### #   # ##### #####  ##"
 echo "##   #     #   # ##  #   #   #   #   #   ##  # #     #   #  ##"
 echo "##   #     #   # # # #   #   #####   #   # # # ###   #####  ##"
 echo "##   #     #   # #  ##   #   #   #   #   #  ## #     #  #   ##"
 echo "##    ####  ###  #   #   #   #   # ##### #   # ##### #   #  ##"
-echo "##                                                          ##"   
-echo "##      ####  #      ###  ##### #####  ###  ##### #   #     ##"   
-echo "##      #   # #     #   #   #   #     #   # #   # ## ##     ##"   
-echo "##      ####  #     #####   #   ####  #   # ##### # # #     ##"   
-echo "##      #     #     #   #   #   #     #   # #  #  #   #     ##"   
-echo "##      #     ##### #   #   #   #      ###  #   # #   #     ##"   
-echo "##                                                          ##"   
+echo "##                                                          ##"
+echo "##      ####  #      ###  ##### #####  ###  ##### #   #     ##"
+echo "##      #   # #     #   #   #   #     #   # #   # ## ##     ##"
+echo "##      ####  #     #####   #   ####  #   # ##### # # #     ##"
+echo "##      #     #     #   #   #   #     #   # #  #  #   #     ##"
+echo "##      #     ##### #   #   #   #      ###  #   # #   #     ##"
+echo "##                                                          ##"
 echo "##  https://github.com/redhatdemocentral/ocp-install-demo   ##"
-echo "##                                                          ##"   
+echo "##                                                          ##"
 echo "##############################################################"
 echo
 
@@ -76,65 +85,11 @@ elif [ `uname` == 'Linux' ]; then
     echo "Download them from https://github.com/docker/machine/releases and https://github.com/dhiltgen/docker-machine-kvm/releases, respectively."
 fi
 
-# Ensure docker engine available.
+# Ensure docker-machine tool available.
 #
-if [ `uname` == 'Darwin' ]; then
-		command -v docker -h  >/dev/null 2>&1 || { echo >&2 "Docker is required but not installed yet... download here: https://store.docker.com/search?offering=community&type=edition"; exit 1; }
-		echo "Docker is installed... checking for valid version..."
-		echo
-elif [ `uname` == 'Linux' ]; then
-		command -v docker -h  >/dev/null 2>&1 || { echo >&2 "Docker is required but not installed yet... download here: https://store.docker.com/search?offering=community&type=edition or install through your distro's package manager"; exit 1; }
-		echo "Docker is installed... checking for valid version..."
-		echo
-fi
-
-# Check that docker deamon is setup correctly.
-if [ `uname` == 'Darwin' ]; then
-	# for osX.
-	docker ps >/dev/null 2>&1
-
-	if [ $? -ne 0 ]; then
-		echo "Docker deamon is not running... please start Docker for osX..."
-		echo
-		exit
-	fi
-else
-	# For some Linux versions, docker needs root permissions.
-	echo "Checking the docker version on Linux requires 'sudo', please provide the password..."
-	echo
-	sudo docker ps >/dev/null 2>&1
-
-	if [ $? -ne 0 ]; then
-		echo "Docker deamon is not running... or is running insecurely..."
-		echo
-		echo "Check for instructions to run the docker deamon securely in NOTES section of this projects Readme.md file."
-		echo
-		exit
-	fi
-fi
-
-echo "Verified the Docker daemon is running..."
+command -v docker-machine -v >/dev/null 2>&1 || { echo >&2 "Docker-machine is required but not installed yet... instructions here: https://docs.docker.com/machine/install-machine/#install-machine-directly"; exit 1; }
+echo "Docker-machine tooling installed..."
 echo
-
-# Check docker engine version.
-if [ `uname` == 'Darwin' ]; then
-		dockerverone=$(docker version -f='{{ .Client.Version }}' | awk -F[=.] '{print $1}')
-		dockervertwo=$(docker version -f='{{ .Client.Version }}' | awk -F[=.] '{print $2}')
-		if [ $dockerverone -eq $DOCKER_MAJOR_VER ] && [ $dockervertwo -ge $DOCKER_MINOR_VER ]; then
-			echo "Valid version of docker engine found... $dockerverone.$dockervertwo"
-			echo
-		else
-			echo "Docker engine version $dockerverone.$dockervertwo found... need $DOCKER_MAJOR_VER.$DOCKER_MINOR_VER or higher, please install: https://store.docker.com/search?offering=community&type=edition"
-			echo
-			exit
-		fi
-elif [ `uname` == 'Linux' ]; then
-		echo "This demo has been tested with docker 1.12+ on several Linux distro's, as various distro's"
-		echo "ship with different versions of docker, not all available docker versions have been tested."
-		echo "As such, the demo probably works with other versions of docker installed locally, but you run"
-		echo "them at your own risk."
-    echo
-fi
 
 # Ensure OpenShift command line tools available.
 #
@@ -164,9 +119,9 @@ else
 	fi
 fi
 
-echo "Setting up OpenShift docker machine..."
+echo "Setting up OpenShift docker machine using $VIRT_DRIVER from cache..."
 echo
-docker-machine create --driver ${VIRT_DRIVER} --${VIRT_DRIVER}-cpu-count "2" --${VIRT_DRIVER}-memory "$VM_MEMORY" --engine-insecure-registry 172.30.0.0/16 --${VIRT_DRIVER}-boot2docker-url $ISO_CACHE openshift 
+docker-machine create --driver ${VIRT_DRIVER} --${VIRT_DRIVER}-cpu-count "2" --${VIRT_DRIVER}-memory "$VM_MEMORY" --engine-insecure-registry 172.30.0.0/16 --${VIRT_DRIVER}-boot2docker-url $ISO_CACHE openshift
 
 if [ $? -ne 0 ]; then
 		echo
@@ -176,9 +131,9 @@ if [ $? -ne 0 ]; then
 		echo
 		docker-machine rm -f openshift
 
-		echo "Setting up new OpenShift docker machine..."
+    echo "Setting up OpenShift docker machine using $VIRT_DRIVER from url..."
     echo
-    docker-machine create --driver ${VIRT_DRIVER} --${VIRT_DRIVER}-cpu-count "2" --${VIRT_DRIVER}-memory "$VM_MEMORY" --engine-insecure-registry 172.30.0.0/16 --${VIRT_DRIVER}-boot2docker-url $ISO_URL openshift 
+		docker-machine create --driver ${VIRT_DRIVER} --${VIRT_DRIVER}-cpu-count "2" --${VIRT_DRIVER}-memory "$VM_MEMORY" --engine-insecure-registry 172.30.0.0/16 --${VIRT_DRIVER}-boot2docker-url $ISO_URL openshift
 
 		if [ $? -ne 0 ]; then
 				echo
@@ -192,7 +147,7 @@ fi
 
 echo "Installing OCP with cluster up..."
 echo
-oc cluster up --image=registry.access.redhat.com/openshift3/ose --host-data-dir=/var/lib/boot2docker/ocp-data --docker-machine=openshift --host-config-dir=/var/lib/boot2docker/ocp-config --use-existing-config=true --version=$OCP_VERSION --host-pv-dir=/var/lib/boot2docker/ocp-pv --service-catalog
+oc cluster up --image=registry.access.redhat.com/openshift3/ose --host-data-dir=/var/lib/boot2docker/ocp-data --docker-machine=openshift --host-config-dir=/var/lib/boot2docker/ocp-config --use-existing-config=true --version=$OCP_VERSION --host-pv-dir=/var/lib/boot2docker/ocp-pv
 
 
 if [ $? -ne 0 ]; then
@@ -203,16 +158,16 @@ if [ $? -ne 0 ]; then
 		echo
 		docker-machine rm -f openshift
 
-    echo "Setting up new OpenShift docker machine..."
+    echo "Setting up OpenShift docker machine using $VIRT_DRIVER from cache..."
     echo
-    docker-machine create --driver ${VIRT_DRIVER} --${VIRT_DRIVER}-cpu-count "2" --${VIRT_DRIVER}-memory "$VM_MEMORY" --engine-insecure-registry 172.30.0.0/16 --${VIRT_DRIVER}-boot2docker-url="$ISO_URL" openshift 
+		docker-machine create --driver ${VIRT_DRIVER} --${VIRT_DRIVER}-cpu-count "2" --${VIRT_DRIVER}-memory "$VM_MEMORY" --engine-insecure-registry 172.30.0.0/16 --${VIRT_DRIVER}-boot2docker-url $ISO_CACHE openshift
 
 		echo
 		echo "Trying again to install OCP with cluster up..."
 		echo
 		echo "Using osX version of cluster up... installing second try OCP version: $OCP_VERSION"
 		echo
-    oc cluster up --image=registry.access.redhat.com/openshift3/ose --host-data-dir=/var/lib/boot2docker/ocp-data --docker-machine=openshift --host-config-dir=/var/lib/boot2docker/ocp-config --use-existing-config=true --version=$OCP_VERSION --host-pv-dir=/var/lib/boot2docker/ocp-pv --service-catalog
+    oc cluster up --image=registry.access.redhat.com/openshift3/ose --host-data-dir=/var/lib/boot2docker/ocp-data --docker-machine=openshift --host-config-dir=/var/lib/boot2docker/ocp-config --use-existing-config=true --version=$OCP_VERSION --host-pv-dir=/var/lib/boot2docker/ocp-pv
 
 		if [ $? -ne 0 ]; then
 				echo
@@ -232,7 +187,7 @@ oc login -u system:admin
 # capturing OCP IP address from status command.
 OCP_IP=$(oc status | awk '/My Project/{print $8}')
 
-echo 
+echo
 echo "Set OCP IP to $OCP_IP..."
 echo
 
@@ -263,21 +218,141 @@ if [ $? -ne 0 ]; then
 fi
 
 echo
-echo "Updating JBoss image streams..."
+echo "Updating JBoss BRMS 63 image stream..."
 echo
-oc delete -n openshift -f $STREAM_JBOSS >/dev/null 2>&1
-oc create -n openshift -f $STREAM_JBOSS
+oc delete -n openshift -f $STREAM_BRMS_63 >/dev/null 2>&1
+oc create -n openshift -f $STREAM_BRMS_63
 
 if [ $? -ne 0 ]; then
 	echo
-	echo "Problem with accessing JBoss product streams for OCP..."
+	echo "Problem with accessing JBoss BRMS 63 stream for OCP..."
 	echo
   echo "Trying again..."
 	echo
 	sleep 10
-  oc delete -n openshift -f $STREAM_JBOSS >/dev/null 2>&1
-  oc create -n openshift -f $STREAM_JBOSS
-	
+  oc delete -n openshift -f $STREAM_BRMS_63 >/dev/null 2>&1
+  oc create -n openshift -f $STREAM_BRMS_63
+
+	if [ $? -ne 0 ]; then
+		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
+		echo
+		docker-machine rm -f openshift
+		exit
+	fi
+fi
+
+echo
+echo "Updating JBoss BPMS 63 image stream..."
+echo
+oc delete -n openshift -f $STREAM_BPMS_63 >/dev/null 2>&1
+oc create -n openshift -f $STREAM_BPMS_63
+
+if [ $? -ne 0 ]; then
+	echo
+	echo "Problem with accessing JBoss BPMS 63 stream for OCP..."
+	echo
+  echo "Trying again..."
+	echo
+	sleep 10
+  oc delete -n openshift -f $STREAM_BPMS_63 >/dev/null 2>&1
+  oc create -n openshift -f $STREAM_BPMS_63
+
+	if [ $? -ne 0 ]; then
+		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
+		echo
+		docker-machine rm -f openshift
+		exit
+	fi
+fi
+
+echo
+echo "Updating JBoss BRMS 64 image stream..."
+echo
+oc delete -n openshift -f $STREAM_BRMS_64 >/dev/null 2>&1
+oc create -n openshift -f $STREAM_BRMS_64
+
+if [ $? -ne 0 ]; then
+	echo
+	echo "Problem with accessing JBoss BRMS 64 stream for OCP..."
+	echo
+  echo "Trying again..."
+	echo
+	sleep 10
+  oc delete -n openshift -f $STREAM_BRMS_64 >/dev/null 2>&1
+  oc create -n openshift -f $STREAM_BRMS_64
+
+	if [ $? -ne 0 ]; then
+		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
+		echo
+		docker-machine rm -f openshift
+		exit
+	fi
+fi
+
+echo
+echo "Updating JBoss BPMS 64 image stream..."
+echo
+oc delete -n openshift -f $STREAM_BPMS_64 >/dev/null 2>&1
+oc create -n openshift -f $STREAM_BPMS_64
+
+if [ $? -ne 0 ]; then
+	echo
+	echo "Problem with accessing JBoss BPMS 64 stream for OCP..."
+	echo
+  echo "Trying again..."
+	echo
+	sleep 10
+  oc delete -n openshift -f $STREAM_BPMS_64 >/dev/null 2>&1
+  oc create -n openshift -f $STREAM_BPMS_64
+
+	if [ $? -ne 0 ]; then
+		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
+		echo
+		docker-machine rm -f openshift
+		exit
+	fi
+fi
+
+echo
+echo "Updating JBoss EAP 70 image stream..."
+echo
+oc delete -n openshift -f $STREAM_EAP_70 >/dev/null 2>&1
+oc create -n openshift -f $STREAM_EAP_70
+
+if [ $? -ne 0 ]; then
+	echo
+	echo "Problem with accessing JBoss EAP 70 stream for OCP..."
+	echo
+  echo "Trying again..."
+	echo
+	sleep 10
+  oc delete -n openshift -f $STREAM_EAP_70 >/dev/null 2>&1
+  oc create -n openshift -f $STREAM_EAP_70
+
+	if [ $? -ne 0 ]; then
+		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
+		echo
+		docker-machine rm -f openshift
+		exit
+	fi
+fi
+
+echo
+echo "Updating JBoss EAP 71 image stream..."
+echo
+oc delete -n openshift -f $STREAM_EAP_71 >/dev/null 2>&1
+oc create -n openshift -f $STREAM_EAP_71
+
+if [ $? -ne 0 ]; then
+	echo
+	echo "Problem with accessing JBoss EAP 71 stream for OCP..."
+	echo
+  echo "Trying again..."
+	echo
+	sleep 10
+  oc delete -n openshift -f $STREAM_EAP_71 >/dev/null 2>&1
+  oc create -n openshift -f $STREAM_EAP_71
+
 	if [ $? -ne 0 ]; then
 		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
 		echo
@@ -301,7 +376,7 @@ if [ $? -ne 0 ]; then
 	sleep 10
   oc delete -n openshift -f $STREAM_FUSE >/dev/null 2>&1
   oc create -n openshift -f $STREAM_FUSE
-	
+
 	if [ $? -ne 0 ]; then
 		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
 		echo
@@ -311,21 +386,21 @@ if [ $? -ne 0 ]; then
 fi
 
 echo
-echo "Updating EAP templates..."
+echo "Updating OpenJDK18 image stream..."
 echo
-oc delete -n openshift -f $TEMPLATE_EAP >/dev/null 2>&1
-oc create -n openshift -f $TEMPLATE_EAP
+oc delete -n openshift -f $STREAM_OPENJDK18 >/dev/null 2>&1
+oc create -n openshift -f $STREAM_OPENJDK18
 
 if [ $? -ne 0 ]; then
 	echo
-	echo "Problem with accessing JBoss EAP product streams for OCP..."
+	echo "Problem with accessing OPENJDK18 stream for OCP..."
 	echo
   echo "Trying again..."
 	echo
 	sleep 10
-	oc delete -n openshift -f $TEMPLATE_EAP >/dev/null 2>&1
-  oc create -n openshift -f $TEMPLATE_EAP
-	
+  oc delete -n openshift -f $STREAM_OPENJDK18 >/dev/null 2>&1
+  oc create -n openshift -f $STREAM_OPENJDK18
+
 	if [ $? -ne 0 ]; then
 		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
 		echo
@@ -335,25 +410,69 @@ if [ $? -ne 0 ]; then
 fi
 
 echo
-echo "Updating Decision Server templates..."
+echo "Updating EAP 70 template..."
 echo
-oc delete -n openshift -f $TEMPLATE_BRMS_63 >/dev/null 2>&1
+oc delete -n openshift -f $TEMPLATE_EAP70 >/dev/null 2>&1
+oc create -n openshift -f $TEMPLATE_EAP70
+
+if [ $? -ne 0 ]; then
+	echo
+	echo "Problem with accessing JBoss EAP 70 template for OCP..."
+	echo
+  echo "Trying again..."
+	echo
+	sleep 10
+	oc delete -n openshift -f $TEMPLATE_EAP70 >/dev/null 2>&1
+  oc create -n openshift -f $TEMPLATE_EAP70
+
+	if [ $? -ne 0 ]; then
+		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
+		echo
+		docker-machine rm -f openshift
+		exit
+	fi
+fi
+
+echo
+echo "Updating EAP 71 template..."
+echo
+oc delete -n openshift -f $TEMPLATE_EAP71 >/dev/null 2>&1
+oc create -n openshift -f $TEMPLATE_EAP71
+
+if [ $? -ne 0 ]; then
+	echo
+	echo "Problem with accessing JBoss EAP 71 template for OCP..."
+	echo
+  echo "Trying again..."
+	echo
+	sleep 10
+	oc delete -n openshift -f $TEMPLATE_EAP71 >/dev/null 2>&1
+  oc create -n openshift -f $TEMPLATE_EAP71
+
+	if [ $? -ne 0 ]; then
+		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
+		echo
+		docker-machine rm -f openshift
+		exit
+	fi
+fi
+
+echo
+echo "Updating Decision Server 64 template..."
+echo
 oc delete -n openshift -f $TEMPLATE_BRMS_64 >/dev/null 2>&1
-oc create -n openshift -f $TEMPLATE_BRMS_63
 oc create -n openshift -f $TEMPLATE_BRMS_64
 
 if [ $? -ne 0 ]; then
 	echo
-	echo "Problem with accessing JBoss BRMS product streams for OCP..."
+	echo "Problem with accessing JBoss BRMS 64 template for OCP..."
 	echo
   echo "Trying again..."
 	echo
 	sleep 10
-  oc delete -n openshift -f $TEMPLATE_BRMS_63 >/dev/null 2>&1
   oc delete -n openshift -f $TEMPLATE_BRMS_64 >/dev/null 2>&1
-  oc create -n openshift -f $TEMPLATE_BRMS_63
   oc create -n openshift -f $TEMPLATE_BRMS_64
-	
+
 	if [ $? -ne 0 ]; then
 		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
 		echo
@@ -362,29 +481,52 @@ if [ $? -ne 0 ]; then
 	fi
 fi
 
-TEMPLATE_BPMS_64_POSTGRESQL
 echo
-echo "Updating Process Server templates..."
+echo "Updating Process Server 64 template..."
 echo
-oc delete -n openshift -f $TEMPLATE_BPMS_64_POSTGRESQL >/dev/null 2>&1
-oc create -n openshift -f $TEMPLATE_BPMS_64_POSTGRESQL
+oc delete -n openshift -f $TEMPLATE_BPM_64 >/dev/null 2>&1
+oc create -n openshift -f $TEMPLATE_BPM_64
 
 if [ $? -ne 0 ]; then
-        echo
-        echo "Problem with accessing JBoss BPM Suite product streams for OCP..."
-        echo
+	echo
+	echo "Problem with accessing JBoss BPM Suite 64 template for OCP..."
+	echo
   echo "Trying again..."
-        echo
-        sleep 10
-  oc delete -n openshift -f $TEMPLATE_BPMS_64_POSTGRESQL >/dev/null 2>&1
-  oc create -n openshift -f $TEMPLATE_BPMS_64_POSTGRESQL
+	echo
+	sleep 10
+  oc delete -n openshift -f $TEMPLATE_BPM_64 >/dev/null 2>&1
+  oc create -n openshift -f $TEMPLATE_BPM_64
 
-        if [ $? -ne 0 ]; then
-                echo "Failed again, exiting, check output messages and network connectivity before running install again..."
-                echo
-                docker-machine rm -f openshift
-                exit
-        fi
+	if [ $? -ne 0 ]; then
+		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
+		echo
+		docker-machine rm -f openshift
+		exit
+	fi
+fi
+
+echo
+echo "Updating Process Server DB 64 template..."
+echo
+oc delete -n openshift -f $TEMPLATE_BPM_DB_64 >/dev/null 2>&1
+oc create -n openshift -f $TEMPLATE_BPM_DB_64
+
+if [ $? -ne 0 ]; then
+	echo
+	echo "Problem with accessing JBoss BPM Suite DB 64 template for OCP..."
+	echo
+  echo "Trying again..."
+	echo
+	sleep 10
+  oc delete -n openshift -f $TEMPLATE_BPM_DB_64 >/dev/null 2>&1
+  oc create -n openshift -f $TEMPLATE_BPM_DB_64
+
+	if [ $? -ne 0 ]; then
+		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
+		echo
+		docker-machine rm -f openshift
+		exit
+	fi
 fi
 
 echo
@@ -402,7 +544,7 @@ if [ $? -ne 0 ]; then
 	sleep 10
   oc delete -n openshift -f $STREAM_RHEL >/dev/null 2>&1
   oc create -n openshift -f $STREAM_RHEL
-	
+
 	if [ $? -ne 0 ]; then
 		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
 		echo
@@ -426,7 +568,7 @@ if [ $? -ne 0 ]; then
 	sleep 10
   oc delete -n openshift -f $STREAM_DOTNET >/dev/null 2>&1
   oc create -n openshift -f $STREAM_DOTNET
-	
+
 	if [ $? -ne 0 ]; then
 		echo "Failed again, exiting, check output messages and network connectivity before running install again..."
 		echo
